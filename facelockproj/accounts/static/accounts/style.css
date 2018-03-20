@@ -1,3 +1,7 @@
 body {
-    background-color: lightblue;
+    background-color: rgb(140, 196, 214);
+}
+
+.bodyColor{
+    background: red;
 }

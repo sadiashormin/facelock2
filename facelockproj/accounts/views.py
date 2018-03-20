@@ -3,13 +3,15 @@ from django.urls import reverse
 
 from accounts.forms import (
     RegistrationForm,
-    EditProfileForm
+    EditProfileForm,
+    UserForm
 )
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from accounts.models import UserProfile
 
 
 def register(request):
@@ -17,7 +19,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(reverse('accounts:home'))
+            return redirect(reverse('accounts:login'))
     else:
         form = RegistrationForm()
 
@@ -35,13 +37,15 @@ def view_profile(request, pk=None):
 def edit_profile(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
-
-        if form.is_valid():
+        user_form = UserForm(request.POST, instance=request.user)
+        if  user_form.is_valid() and form.is_valid():
+            user_form.save()
             form.save()
             return redirect(reverse('accounts:view_profile'))
     else:
-        form = EditProfileForm(instance=request.user)
-        args = {'form': form}
+        user_form = UserForm(instance=request.user)
+        profile_form = EditProfileForm(instance=request.user)
+        args = {'profile_form': profile_form, 'user_form': user_form}
         return render(request, 'accounts/edit_profile.html', args)
 
 def change_password(request):

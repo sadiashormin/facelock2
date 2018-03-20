@@ -1,10 +1,25 @@
+<style>
+        .homeCol{
+            background: white;
+            height: 100%;
+            float: left
+        } 
+        .friendCol{
+            background:white;
+            height: 100%;
+            float: right;
+            padding: 10px;
+        } 
+
+    </style>
 {% extends 'base.html' %}
 
 {% block body %}
 <div class="container">
-    <div class="col-md-8">
-        <h2>Home</h2>
-        <form method="post">
+    <div class="col-md-8 homeCol">
+        <h2>Welcome! </h2>
+        <div>This is your home page. </div>
+        <!-- <form method="post">
             {% csrf_token %}
             {{ form.post }}
             <br>
@@ -14,28 +29,38 @@
         {% for post in posts %}
             <h1>{{ post.post }}</h1>
             <p>Posted by {{ post.user.get_full_name }} on {{ post.created }}</p>
-        {% endfor %}
+        {% endfor %} -->
     </div>
-    <div class="col-md-4">
-        <h2>Other People</h2>
+    <div class="col-md-1">
+    </div>
+
+    <div class="col-md-3 friendCol">
+        <h2 style="color:rgb(15, 15, 17);"> <u>Other People</u></h2>
+    
         {% for user in users %}
-            <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                <!-- <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a> -->
+            <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;" ><h4 >
                 <h3>{{ user.username }}</h3>
-            </a>
+            </h4>
             {% if not user in friends %}
             <a href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
             <button type="button" class="btn btn-success">Add Friend</button>
             </a>
+            </li>
             {% endif %}
+     
         {% endfor %}
-        <h2>Friends</h2>
+        <h2 style="color:rgb(15, 15, 17);"><u>Friends</u></h2> 
         {% for friend in friends %}
-            <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
+        <!-- <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a> -->
+        <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;">
+            <h4>
                 <h3>{{ friend.username }}</h3>
-            </a>
+            </h4>
             <a href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
-            <button type="button" class="btn btn-default">Remove Friend</button>
+            <button type="button" class="btn btn-success">Remove Friend</button>
             </a>
+        </li>
         {% endfor %}
     </div>
 </div>

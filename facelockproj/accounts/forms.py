@@ -30,15 +30,29 @@ class RegistrationForm(UserCreationForm):
 
         return user
 
-
-class EditProfileForm(UserChangeForm):
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name')
+        
+class EditProfileForm(forms.ModelForm):
     template_name='/something/else'
 
     class Meta:
-        model = User
+        model = UserProfile
+        # exclude=('User',)
         fields = (
-            'email',
-            'first_name',
-            'last_name',
-            'password'
+            # 'first_name',
+            # 'last_name',
+            'image',
+            # 'city'
         )
+    def save(self, commit=True):
+        profile = super(EditProfileForm, self).save(commit=False)
+        # profile.city = self.cleaned_data['city']
+        #profile.image=self.cleaned_data['image']
+
+        if commit:
+            profile.save()
+
+        return profile
