@@ -4,7 +4,8 @@ from django.urls import reverse
 from accounts.forms import (
     RegistrationForm,
     EditProfileForm,
-    UserForm
+    UserForm,
+    FaceForm
 )
 
 from django.contrib.auth.models import User
@@ -36,17 +37,36 @@ def view_profile(request, pk=None):
 
 def edit_profile(request):
     if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance=request.user)
+        # form = EditProfileForm(request.POST, instance=request.user)
         user_form = UserForm(request.POST, instance=request.user)
-        if  user_form.is_valid() and form.is_valid():
+        if  user_form.is_valid():
             user_form.save()
-            form.save()
+            # form.save()
             return redirect(reverse('accounts:view_profile'))
     else:
         user_form = UserForm(instance=request.user)
-        profile_form = EditProfileForm(instance=request.user)
-        args = {'profile_form': profile_form, 'user_form': user_form}
+        # profile_form = EditProfileForm(instance=request.user)
+        # args = {'profile_form': profile_form, 'user_form': user_form}
+        args = { 'user_form': user_form}
         return render(request, 'accounts/edit_profile.html', args)
+
+def edit_face(request):
+    if request.method == 'POST':
+        # form = EditProfileForm(request.POST, instance=request.user)
+        face_form = FaceForm(request.POST, request.FILES)
+        if  face_form.is_valid():
+            face = face_form.save(commit=False)
+            face.user = request.user
+            face.save()
+            # face_form.save()
+            # form.save()
+            return redirect(reverse('accounts:view_profile'))
+    else:
+        face_form = FaceForm(instance=request.user)
+        # profile_form = EditProfileForm(instance=request.user)
+        # args = {'profile_form': profile_form, 'user_form': user_form}
+        args = { 'face_form': face_form}
+        return render(request, 'accounts/edit_face.html', args)
 
 def change_password(request):
     if request.method == 'POST':

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from accounts.models import UserProfile
+from accounts.models import Face
 
 
 class RegistrationForm(UserCreationForm):
@@ -56,3 +57,9 @@ class EditProfileForm(forms.ModelForm):
             profile.save()
 
         return profile
+
+class FaceForm(forms.ModelForm):
+    picture = forms.ImageField()
+    class Meta:
+        model = Face
+        fields = ('picture',)

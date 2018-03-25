@@ -7,11 +7,11 @@
 
 {% block body %}
 <div class="container">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ user_form.as_p }}
+        {{ face_form.as_p }}
         <!-- {{ profile_form.as_p }} -->
-        <button type="submit">Submit</button>
+        <button type="submit">Submit2</button>
     </form>
     <br>
 </div>

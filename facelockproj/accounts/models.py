@@ -19,6 +19,11 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+class Face(models.Model):
+    user = models.ForeignKey(User)
+    picture = models.ImageField()
+    def __str__(self):
+        return "%s the face" % self.user.name
 
 def create_profile(sender, **kwargs):
     if kwargs['created']:
