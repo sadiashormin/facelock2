@@ -12,8 +12,9 @@ class HomeView(TemplateView):
     def get(self, request):
         form = HomeForm()
         # posts = Post.objects.all().order_by('-created')
-        posts=Post.objects.filter(user_id__in=Friend.objects.get(current_user=request.user).users.all())|Post.objects.filter(user=request.user)
-        posts=posts.order_by('-created')
+        posts = Post.objects.filter(user_id__in=Friend.objects.get(
+            current_user=request.user).users.all()) | Post.objects.filter(user=request.user)
+        posts = posts.order_by('-created')
         users = User.objects.exclude(id=request.user.id)
         try:
             friend = Friend.objects.get(current_user=request.user)
@@ -21,7 +22,6 @@ class HomeView(TemplateView):
         except:
             friend = None
             friends = None
-            
 
         args = {
             'form': form, 'posts': posts, 'users': users, 'friends': friends
@@ -41,6 +41,7 @@ class HomeView(TemplateView):
 
         args = {'form': form, 'text': text}
         return render(request, self.template_name, args)
+
 
 def change_friends(request, operation, pk):
     friend = User.objects.get(pk=pk)

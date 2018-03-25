@@ -1,27 +1,30 @@
-{% extends 'base.html' %}
-
-
-{% block head %}
+{% extends 'base.html' %} {% block head %}
 <title>Profile</title>
-{% endblock %}
-
-{% block body %}
+{% endblock %} {% block body %}
 <div class="container">
-    <h1>Profile</h1>
-    <a href="{% url 'accounts:edit_profile' %}" style="color:#CCC;">Edit Info</a>
-    <p>Username: {{ user }}</p>
-    <p>First name: {{ user.first_name }}</p>
-    <p>Last name: {{ user.last_name }}</p>
-    <p>Email: {{ user.email }}</p>
-   
-   <!--  <p>Description: {{ user.userprofile.description }}</p> -->
+    <h1>{{ user.first_name }} {{ user.last_name }}
+        <a class="glyphicon glyphicon-edit" href="{% url 'accounts:edit_profile' %}" style="color:#CCC;"></a>
+    </h1>
+
+    <!-- <p>Username: {{ user }}</p> -->
+    <!-- <p>First name: {{ user.first_name }}</p>
+    <p>Last name: {{ user.last_name }}</p> -->
+    <!-- <p>Email: {{ user.email }}</p> -->
+
+    <!--  <p>Description: {{ user.userprofile.description }}</p> -->
     <!-- <p>Phone: {{ user.userprofile.phone }}</p> -->
     <!-- <p>City: {{ user.userprofile.city }}</p> -->
     <!-- <p>Website: {{ user.userprofile.website }}</p> -->
-    {% if user.userprofile.image %}
-    <img src="{{ user.userprofile.image.url }}" width="240">
+    {% if face.picture %}
+    <div>
+        <img src="/static/{{ face.picture }}" style="width:40%" />
+    </div>
+    <div style="position:relative; top:-40px">
+        <a class="glyphicon glyphicon-edit" href="{% url 'accounts:edit_face_pic' %}" style="color:rgb(43, 40, 40); font-size:40px">
+        </a>
+    </div>
     {% endif %}
-    <a href="{% url 'accounts:edit_face_pic' %}" style="color:#CCC;">Edit Info</a>
+
 </div>
 
 {% endblock %}

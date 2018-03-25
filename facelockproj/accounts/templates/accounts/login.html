@@ -1,12 +1,6 @@
 <style>
-        .loginPage{
-            background: white;
-            height: 100%;
-        } 
-
-    </style>
-{% extends 'base.html' %}
-{% block body %}
+</style>
+{% extends 'base.html' %} {% block body %}
 <div class="container loginPage">
     <h1>Welcome</h1>
     <p class="bodyColor">
@@ -14,8 +8,7 @@
     </p>
     <h2>Login</h2>
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+        {% csrf_token %} {{ form.as_p }}
         <!-- <button type="submit">Login</button> -->
         <button type="submit" class="btn btn-success">Login</button>
     </form>

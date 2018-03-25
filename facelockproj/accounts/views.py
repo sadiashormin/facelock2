@@ -15,8 +15,9 @@ from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile
 from accounts.models import Face
 
+
 def register(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
@@ -27,19 +28,26 @@ def register(request):
         args = {'form': form}
         return render(request, 'accounts/reg_form.html', args)
 
+
 def view_profile(request, pk=None):
     if pk:
         user = User.objects.get(pk=pk)
     else:
         user = request.user
-    args = {'user': user}
+
+    args = None
+    if(Face.objects.get(user=request.user)):
+        args = {'user': user, 'face': Face.objects.get(user=request.user)}
+    else:
+        args = {'user': user}
     return render(request, 'accounts/profile.html', args)
+
 
 def edit_profile(request):
     if request.method == 'POST':
         # form = EditProfileForm(request.POST, instance=request.user)
         user_form = UserForm(request.POST, instance=request.user)
-        if  user_form.is_valid():
+        if user_form.is_valid():
             user_form.save()
             # form.save()
             return redirect(reverse('accounts:view_profile'))
@@ -47,14 +55,15 @@ def edit_profile(request):
         user_form = UserForm(instance=request.user)
         # profile_form = EditProfileForm(instance=request.user)
         # args = {'profile_form': profile_form, 'user_form': user_form}
-        args = { 'user_form': user_form}
+        args = {'user_form': user_form}
         return render(request, 'accounts/edit_profile.html', args)
+
 
 def edit_face(request):
     if request.method == 'POST':
         # form = EditProfileForm(request.POST, instance=request.user)
         face_form = FaceForm(request.POST, request.FILES)
-        if  face_form.is_valid():
+        if face_form.is_valid():
             if(Face.objects.get(user=request.user)):
                 Face.objects.get(user=request.user).delete()
 
@@ -68,8 +77,9 @@ def edit_face(request):
         face_form = FaceForm(instance=request.user)
         # profile_form = EditProfileForm(instance=request.user)
         # args = {'profile_form': profile_form, 'user_form': user_form}
-        args = { 'face_form': face_form}
+        args = {'face_form': face_form}
         return render(request, 'accounts/edit_face.html', args)
+
 
 def change_password(request):
     if request.method == 'POST':

@@ -2,15 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 import uuid
-@deconstructible
-class RandomFileName(object):
-    def __init__(self, path):
-        self.path = os.path.join(path, "%s%s")
 
-    def __call__(self, _, filename):
-        # @note It's up to the validators to check if it's the correct file type in name or if one even exist.
-        extension = os.path.splitext(filename)[1]
-        return self.path % (uuid.uuid4(), extension)
 
 class UserProfileManager(models.Manager):
     def get_queryset(self):
@@ -32,7 +24,7 @@ class UserProfile(models.Model):
 class Face(models.Model):
     # user = models.ForeignKey(User,unique=True,default=uuid.uuid1)
     user = models.ForeignKey(User,unique=True)
-    picture = models.ImageField(upload_to=RandomFileName('home/static/profile'))
+    picture = models.ImageField()
     def __str__(self):
         return "%s the face" % self.user.name
 

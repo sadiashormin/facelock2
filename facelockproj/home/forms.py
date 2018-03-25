@@ -9,7 +9,7 @@ class HomeForm(forms.ModelForm):
             'placeholder': 'Write a post...'
         }
     ))
-    picture = forms.ImageField()
+    picture = forms.ImageField(required=False)
     class Meta:
         model = Post
         fields = ('post','picture')

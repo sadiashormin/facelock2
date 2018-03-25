@@ -1,17 +1,11 @@
-{% extends 'base.html' %}
-
-
-{% block head %}
-<title>Profile</title>
-{% endblock %}
-
-{% block body %}
+{% extends 'base.html' %} {% block head %}
+<title>Upload profile</title>
+{% endblock %} {% block body %}
 <div class="container">
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ face_form.as_p }}
+        {% csrf_token %} {{ face_form.as_p }}
         <!-- {{ profile_form.as_p }} -->
-        <button type="submit">Submit2</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br>
 </div>

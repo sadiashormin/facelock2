@@ -1,93 +1,125 @@
 <style>
-        .homeCol{
-            background: white;
-            /* height: 100%; */
-            float: left;
-        } 
-        .containr{
-            background: white;
-            /* height: 100%; */
-            margin: 10px;
-        } 
-        .friendCol{
-            background:white;
-            /* height: 100%; */
-            float: right;
-            padding: 1px;
-        } 
+    .homeCol {
+        background: white;
+        /* height: 100%; */
+        float: left;
+    }
 
-    </style>
-{% extends 'base.html' %}
+    .containr {
+        background: white;
+        /* height: 100%; */
+        margin: 10px;
+    }
 
-{% block body %}
-<div class="container containr">
+    .friendCol {
+        background: white;
+        /* height: 100%; */
+        float: right;
+        padding: 1px;
+    }
+</style>
+{% extends 'base.html' %} {% block body %}
+<div class="container">
     <div class="col-sm-9 homeCol">
-        <h2>Welcome! </h2>
-        <div>This is your home page. </div>
+        <h4>Welcome! </h4>
+        <!-- <div>This is your home page. </div> -->
         <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.post }}
-            {{ form.picture }}
-            <br>
-            <button type="submit">Submit</button>
+            {% csrf_token %} {{ form.post }}
+            <div style="display: flex;
+            justify-content: space-between;">
+
+                {{ form.picture }}
+                <button type="submit">Submit</button>
+            </div>
+
         </form>
 
 
 
         <h2>{{ text }}</h2>
-        
+
         {% for post in posts %}
-        <li style="background:rgb(231, 231, 238); margin:2px; list-style-type: none;" >
-            <h1>{{ post.post }}</h1>
-        
+        <li style=" margin:2px; list-style-type: none;margin-bottom: 20px;
+        border-bottom: 7px solid #CCC;
+        padding-bottom: 20px;">
+            <p> Posted by
+                <strong>{{ post.user.get_full_name }} </strong>
+            </p>
+            <p>{{ post.post }}</p>
+
             <!-- <h1>{{ post.picture }}</h1> -->
-           
-            {% load static %}
-            <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image"/>
-         
-            <!-- <img src="{% static "mypic.jpg" %}" style="width:100px; height:100px" alt="My image"/> -->
-                <!-- <img src= {{ post.picture }} />
-                <img src="{% static "{{post.picture }}" %}"/>
-                {% load static %}
-            <img src="{% static "home/mypic.jpg" %}" alt="My image"/> -->
-            <p>Posted by {{ post.user.get_full_name }} </p>
-           
+
+            {% load static %} {% if post.picture %}
+            <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
+            />
+            <div class="modal fade" id="{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{ post.post }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/static/{{ post.picture }}" style="width:100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+
+
+
+
         </li>
         {% endfor %}
-     </div> 
+    </div>
 
 
     <!-- <div class="col-sm-1">
-    </div> --> 
+    </div> -->
 
-    <div class="col-sm-3 friendCol">
-        <h2 style="color:rgb(15, 15, 17);"> <u>Other People</u></h2>
-    
-        {% for user in users %}
-                <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a>
-            <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;" ><h4 >
-                <h3>{{ user.username }}</h3>
-            </h4>
-            {% if not user in friends %}
-            <a href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
-            <button type="button" class="btn btn-success">Add Friend</button>
-            </a>
-            </li>
-            {% endif %}
-     
-        {% endfor %}
-        <h2 style="color:rgb(15, 15, 17);"><u>Friends</u></h2> 
-        {% for friend in friends %}
-        <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a>
-        <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;">
+    <div class="col-sm-3">
+        <div class="public-and-friend">
             <h4>
-                <h3>{{ friend.username }}</h3>
+                Other People
             </h4>
-            <a href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
-            <button type="button" class="btn btn-success">Remove Friend</button>
-            </a>
-        </li>
-        {% endfor %}
+
+            {% for user in users %}
+            <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a>
+            {% if not user in friends %}
+            <li class="" style="margin:2px;padding:5px; list-style-type: none;  ">
+
+
+                <a class="glyphicon glyphicon-user">
+                    {{ user.username }}
+                </a>
+
+                <a class="glyphicon glyphicon-plus" href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
+
+                </a>
+
+            </li>
+            {% endif %} {% endfor %}
+            <h4 style="margin-top:40px">
+                Friends
+            </h4>
+            {% for friend in friends %}
+            <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a>
+            <li style="margin:2px;padding:5px; list-style-type: none;">
+
+                <a class="glyphicon glyphicon-user">
+                    {{ friend.username }}
+                </a>
+                <a class="glyphicon glyphicon-minus" href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
+
+                </a>
+            </li>
+            {% endfor %}
+        </div>
+
     </div>
 </div>
 {% endblock %}
