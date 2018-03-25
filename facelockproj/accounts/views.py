@@ -13,7 +13,7 @@ from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile
-
+from accounts.models import Face
 
 def register(request):
     if request.method =='POST':
@@ -55,6 +55,9 @@ def edit_face(request):
         # form = EditProfileForm(request.POST, instance=request.user)
         face_form = FaceForm(request.POST, request.FILES)
         if  face_form.is_valid():
+            if(Face.objects.get(user=request.user)):
+                Face.objects.get(user=request.user).delete()
+
             face = face_form.save(commit=False)
             face.user = request.user
             face.save()

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-
+import uuid
 class UserProfileManager(models.Manager):
     def get_queryset(self):
         return super(UserProfileManager, self).get_queryset().filter(city='London')
@@ -20,7 +20,8 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 class Face(models.Model):
-    user = models.ForeignKey(User)
+    # user = models.ForeignKey(User,unique=True,default=uuid.uuid1)
+    user = models.ForeignKey(User,unique=True)
     picture = models.ImageField()
     def __str__(self):
         return "%s the face" % self.user.name
