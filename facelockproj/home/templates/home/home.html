@@ -35,6 +35,7 @@
 
 
         <h2>{{ text }}</h2>
+        
         {% for post in posts %}
         <li style="background:rgb(231, 231, 238); margin:2px; list-style-type: none;" >
             <h1>{{ post.post }}</h1>
@@ -50,6 +51,7 @@
                 {% load static %}
             <img src="{% static "home/mypic.jpg" %}" alt="My image"/> -->
             <p>Posted by {{ post.user.get_full_name }} </p>
+           
         </li>
         {% endfor %}
      </div> 

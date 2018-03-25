@@ -11,7 +11,9 @@ class HomeView(TemplateView):
 
     def get(self, request):
         form = HomeForm()
-        posts = Post.objects.all().order_by('-created')
+        # posts = Post.objects.all().order_by('-created')
+        posts=Post.objects.filter(user_id__in=Friend.objects.get(current_user=request.user).users.all())|Post.objects.filter(user=request.user)
+        posts=posts.order_by('-created')
         users = User.objects.exclude(id=request.user.id)
         try:
             friend = Friend.objects.get(current_user=request.user)
