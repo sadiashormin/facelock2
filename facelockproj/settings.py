@@ -111,7 +111,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'tutorial/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'facelockproj/home/static')
 
 LOGIN_REDIRECT_URL = '/home/'
 

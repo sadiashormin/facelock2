@@ -45,11 +45,11 @@ class EditProfileForm(forms.ModelForm):
             # 'first_name',
             # 'last_name',
             'image',
-            # 'city'
+             'city'
         )
     def save(self, commit=True):
         profile = super(EditProfileForm, self).save(commit=False)
-        # profile.city = self.cleaned_data['city']
+        profile.city = self.cleaned_data['city']
         #profile.image=self.cleaned_data['image']
 
         if commit:

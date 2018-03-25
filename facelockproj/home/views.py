@@ -27,7 +27,7 @@ class HomeView(TemplateView):
         return render(request, self.template_name, args)
 
     def post(self, request):
-        form = HomeForm(request.POST)
+        form = HomeForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user

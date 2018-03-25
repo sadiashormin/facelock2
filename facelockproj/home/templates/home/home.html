@@ -1,44 +1,68 @@
 <style>
         .homeCol{
             background: white;
-            height: 100%;
-            float: left
+            /* height: 100%; */
+            float: left;
+        } 
+        .containr{
+            background: white;
+            /* height: 100%; */
+            margin: 10px;
         } 
         .friendCol{
             background:white;
-            height: 100%;
+            /* height: 100%; */
             float: right;
-            padding: 10px;
+            padding: 1px;
         } 
 
     </style>
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="container">
-    <div class="col-md-8 homeCol">
+<div class="container containr">
+    <div class="col-sm-9 homeCol">
         <h2>Welcome! </h2>
         <div>This is your home page. </div>
-        <!-- <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.post }}
+            {{ form.picture }}
             <br>
             <button type="submit">Submit</button>
         </form>
+
+
+
         <h2>{{ text }}</h2>
         {% for post in posts %}
+        <li style="background:rgb(231, 231, 238); margin:2px; list-style-type: none;" >
             <h1>{{ post.post }}</h1>
-            <p>Posted by {{ post.user.get_full_name }} on {{ post.created }}</p>
-        {% endfor %} -->
-    </div>
-    <div class="col-md-1">
-    </div>
+        
+            <!-- <h1>{{ post.picture }}</h1> -->
+           
+            {% load static %}
+            <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image"/>
+         
+            <!-- <img src="{% static "mypic.jpg" %}" style="width:100px; height:100px" alt="My image"/> -->
+                <!-- <img src= {{ post.picture }} />
+                <img src="{% static "{{post.picture }}" %}"/>
+                {% load static %}
+            <img src="{% static "home/mypic.jpg" %}" alt="My image"/> -->
+            <p>Posted by {{ post.user.get_full_name }} </p>
+        </li>
+        {% endfor %}
+     </div> 
 
-    <div class="col-md-3 friendCol">
+
+    <!-- <div class="col-sm-1">
+    </div> --> 
+
+    <div class="col-sm-3 friendCol">
         <h2 style="color:rgb(15, 15, 17);"> <u>Other People</u></h2>
     
         {% for user in users %}
-                <!-- <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a> -->
+                <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a>
             <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;" ><h4 >
                 <h3>{{ user.username }}</h3>
             </h4>
@@ -52,7 +76,7 @@
         {% endfor %}
         <h2 style="color:rgb(15, 15, 17);"><u>Friends</u></h2> 
         {% for friend in friends %}
-        <!-- <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a> -->
+        <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a>
         <li style="background:rgb(231, 231, 238); margin:2px;padding:5px; list-style-type: none;">
             <h4>
                 <h3>{{ friend.username }}</h3>
