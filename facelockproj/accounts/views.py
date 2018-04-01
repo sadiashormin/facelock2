@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from accounts.forms import (
     RegistrationForm,
-    EditProfileForm,
+    # EditProfileForm,
     UserForm,
     FaceForm
 )
@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from accounts.models import UserProfile
+# from accounts.models import UserProfile
 from accounts.models import Face
 
 
@@ -36,8 +36,13 @@ def view_profile(request, pk=None):
         user = request.user
 
     args = None
-    if(Face.objects.get(user=request.user)):
-        args = {'user': user, 'face': Face.objects.get(user=request.user)}
+    try:
+        face =Face.objects.get(user=request.user)
+    except:
+        face=None
+    
+    if(face):
+        args = {'user': user, 'face': face}
     else:
         args = {'user': user}
     return render(request, 'accounts/profile.html', args)
@@ -64,9 +69,11 @@ def edit_face(request):
         # form = EditProfileForm(request.POST, instance=request.user)
         face_form = FaceForm(request.POST, request.FILES)
         if face_form.is_valid():
-            if(Face.objects.get(user=request.user)):
-                Face.objects.get(user=request.user).delete()
-
+            try:
+                if(Face.objects.get(user=request.user)):
+                    Face.objects.get(user=request.user).delete()
+            except:
+                pass
             face = face_form.save(commit=False)
             face.user = request.user
             face.save()

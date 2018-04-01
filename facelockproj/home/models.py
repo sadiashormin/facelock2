@@ -9,6 +9,10 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+# class Tag(models.Model):
+#     post = models.ForeignKey(Post)
+#     user = models.ForeignKey(User)
+#     approved=models.BooleanField(default=False)
 
 class Friend(models.Model):
     users = models.ManyToManyField(User)
