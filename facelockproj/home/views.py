@@ -5,6 +5,7 @@ from accounts.models import Face
 from home.forms import HomeForm
 from home.models import Post, Friend, Tag
 import face_recognition
+import cv2
 import os
 from django import template
 
@@ -74,13 +75,25 @@ class HomeView(TemplateView):
                         fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
                         friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
                         results = face_recognition.compare_faces([unknownFaceEncoding], friendpicEncoding, tolerance=0.56)
+                        # face_locations = face_recognition.face_locations(uploadedPhoto)
+                        # for top, right, bottom, left in face_locations:
+                        #     # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+                        #     top *= 4
+                        #     right *= 4
+                        #     bottom *= 4
+                        #     left *= 4
+                        #     face_image = uploadedPhoto[top:bottom, left:right]
+
+                        #     # Blur the face image
+                        #     face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
+
 
                         if results[0] == True:
                             # taggedPersonsNameString=taggedPersonsNameString+friendface.user.username+","
                             t = Tag()
                             t.user=friendface.user
                             t.post=post
-                            t.approved=False
+                            t.status=0
                             t.save()
                             
                         else:
@@ -106,9 +119,19 @@ def change_friends(request, operation, pk):
 def action_tag(request, operation, pk):
     tag = Tag.objects.get(pk=pk)
     if operation == 'approve':
-        tag.approved=True
+        tag.status=1
         tag.save()
     elif operation == 'reject':
-        tag.approved=False
+        tag.status=2
         tag.save()
     return redirect('home:home')
+
+def action_post(request, operation, pk):
+    post = Post.objects.get(pk=pk)
+    if operation == 'delete':
+        post.delete()
+    # elif operation == 'reject':
+    #     tag.status=2
+    #     tag.save()
+    return redirect('home:home')
+

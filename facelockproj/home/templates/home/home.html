@@ -18,7 +18,9 @@
         padding: 1px;
     }
 </style>
-{% extends 'base.html' %} {% block body %}
+{% extends 'base.html' %}
+{%  load my_templatetag %}
+{% block body %}
 <div class="container">
     <div class="col-sm-9 homeCol">
         <h4>Welcome! </h4>
@@ -42,16 +44,41 @@
         <li style=" margin:2px; list-style-type: none;margin-bottom: 20px;
         border-bottom: 7px solid #CCC;
         padding-bottom: 20px;">
-            <p> Posted by
-                <strong>{{ post.user.get_full_name }} </strong>
-            </p>
-            <p>{{ post.post }}</p>
+            <div style="display: flex; justify-content: space-between"> 
+                <span>Posted by
+                    <strong>{{ post.user.get_full_name }} </strong>
+                </span>
+                {% if post.user.id == loggedInUser.id %}
+                <a href="/home/post/delete/{{post.id}}" type="button" class="btn btn-success">Delete</a>
+                {% endif %}
+            </div>
+            <p>{{ post.post|safe }}</p>
+            
+            <!-- {{ post | lower}} -->
 
-            <!-- <h1>{{ post.picture }}</h1> -->
 
             {% load static %} {% if post.picture %}
             <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
             />
+            <div>
+                    {% for tag in post|lower %}
+                    <div style="margin-top:10px">
+                        {{tag.user.first_name}}  {{tag.user.last_name}} 
+                        {% if tag.status == 1 %}
+                        <span class="label label-success">Approved</span>
+                        {% elif tag.status == 2 %}
+                        <span class="label label-danger">Rejected</span>
+                        {% elif tag.status == 0 and tag.user_id == loggedInUser.id %} 
+                        <a href="/home/tag/approve/{{tag.id}}" type="button" class="btn btn-success">Accept</a>
+                        <a href="/home/tag/reject/{{tag.id}}" type="button" class="btn btn-danger">Reject</a>
+
+                        <!-- <span type="button" class="btn btn-success">Accept</span> -->
+                        {% elif tag.status == 0 %}
+                        <span class="label label-danger">Waiting</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                  </div>
             <div class="modal fade" id="{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">

@@ -12,7 +12,7 @@ class Post(models.Model):
 class Tag(models.Model):
     post = models.ForeignKey(Post)
     user = models.ForeignKey(User)
-    approved=models.BooleanField(default=False)
+    status=models.IntegerField(default=0)
 
 class Friend(models.Model):
     users = models.ManyToManyField(User)
