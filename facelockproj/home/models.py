@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Post(models.Model):
     post = models.CharField(max_length=500)
     picture = models.ImageField()
+    bluredPicture = models.ImageField(null=True)
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -13,7 +14,11 @@ class Tag(models.Model):
     post = models.ForeignKey(Post)
     user = models.ForeignKey(User)
     status=models.IntegerField(default=0)
-
+    top=models.IntegerField(null=True)
+    right=models.IntegerField(null=True)
+    bottom=models.IntegerField(null=True)
+    left=models.IntegerField(null=True)
+    
 class Friend(models.Model):
     users = models.ManyToManyField(User)
     current_user = models.ForeignKey(User, related_name='owner', null=True)

@@ -57,9 +57,14 @@
             <!-- {{ post | lower}} -->
 
 
-            {% load static %} {% if post.picture %}
+            {% load static %} 
+            {% if post.picture %}
             <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
             />
+            {% if post.bluredPicture %}
+            <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
+            />
+            {% endif %}
             <div>
                     {% for tag in post|lower %}
                     <div style="margin-top:10px">

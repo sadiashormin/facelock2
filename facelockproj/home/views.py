@@ -70,12 +70,14 @@ class HomeView(TemplateView):
                 uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name)
                 uploadedPhotoEncodlings = face_recognition.face_encodings(uploadedPhoto)
                 # taggedPersonsNameString="";
-                for unknownFaceEncoding in uploadedPhotoEncodlings:
+                for i in range(0,len(uploadedPhotoEncodlings)):
                     for friendface in friendfaces:
                         fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
                         friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
-                        results = face_recognition.compare_faces([unknownFaceEncoding], friendpicEncoding, tolerance=0.56)
-                        # face_locations = face_recognition.face_locations(uploadedPhoto)
+                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.56)
+                        # new code
+                        #unknownFaceEncoding[1]
+                        
                         # for top, right, bottom, left in face_locations:
                         #     # Scale back up face locations since the frame we detected in was scaled to 1/4 size
                         #     top *= 4
@@ -90,10 +92,17 @@ class HomeView(TemplateView):
 
                         if results[0] == True:
                             # taggedPersonsNameString=taggedPersonsNameString+friendface.user.username+","
+                            face_locations = face_recognition.face_locations(uploadedPhoto)
+                            top, right, bottom, left = face_locations[i]
+
                             t = Tag()
                             t.user=friendface.user
                             t.post=post
                             t.status=0
+                            t.top=int(top)
+                            t.right=int(right)
+                            t.bottom=int(bottom)
+                            t.left=int(left)
                             t.save()
                             
                         else:
@@ -124,6 +133,19 @@ def action_tag(request, operation, pk):
     elif operation == 'reject':
         tag.status=2
         tag.save()
+        post = tag.post
+        picToBlur=post.bluredPicture.name if post.bluredPicture else tag.post.picture.name
+        #uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+tag.post.picture.name)
+        frame = cv2.imread(os.path.abspath(os.path.dirname(__file__))+"/static/"+picToBlur)
+        face_image = frame[tag.top:tag.bottom, tag.left:tag.right]  
+        face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
+        frame[tag.top:tag.bottom, tag.left:tag.right] = face_image
+        cv2.imwrite(os.path.abspath(os.path.dirname(__file__))+"/static/"+"blured"+picToBlur,frame)
+        
+        post.bluredPicture="blured"+picToBlur
+        post.save()
+        # find the post and the image path
+        # use lib to recognize current user 
     return redirect('home:home')
 
 def action_post(request, operation, pk):
