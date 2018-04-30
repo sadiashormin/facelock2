@@ -18,9 +18,7 @@
         padding: 1px;
     }
 </style>
-{% extends 'base.html' %}
-{%  load my_templatetag %}
-{% block body %}
+{% extends 'base.html' %} {% load my_templatetag %} {% block body %}
 <div class="container">
     <div class="col-sm-9 homeCol">
         <h4>Welcome! </h4>
@@ -29,61 +27,57 @@
             {% csrf_token %} {{ form.post }}
             <div style="display: flex;
             justify-content: space-between;">
-
                 {{ form.picture }}
                 <button type="submit">Submit</button>
             </div>
-
         </form>
-
-
-
         <h2>{{ text }}</h2>
-
-        {% for post in posts %}
+        {% for post in posts %}  {% with tags=post|getTags %}{% with visible=post|shouldVisible:loggedInUser  %}
+        {% if visible %}
         <li style=" margin:2px; list-style-type: none;margin-bottom: 20px;
         border-bottom: 7px solid #CCC;
         padding-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between"> 
+            <div style="display: flex; justify-content: space-between">
                 <span>Posted by
                     <strong>{{ post.user.get_full_name }} </strong>
                 </span>
                 {% if post.user.id == loggedInUser.id %}
                 <a href="/home/post/delete/{{post.id}}" type="button" class="btn btn-success">Delete</a>
                 {% endif %}
+
             </div>
             <p>{{ post.post|safe }}</p>
-            
             <!-- {{ post | lower}} -->
-
-
-            {% load static %} 
-            {% if post.picture %}
+            {% load static %} {% if post.picture %}
             <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
-            />
-            {% if post.bluredPicture %}
+            /> {% if post.bluredPicture %}
             <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
-            />
-            {% endif %}
+            /> {% endif %}
             <div>
-                    {% for tag in post|lower %}
-                    <div style="margin-top:10px">
-                        {{tag.user.first_name}}  {{tag.user.last_name}} 
-                        {% if tag.status == 1 %}
-                        <span class="label label-success">Approved</span>
-                        {% elif tag.status == 2 %}
-                        <span class="label label-danger">Rejected</span>
-                        {% elif tag.status == 0 and tag.user_id == loggedInUser.id %} 
-                        <a href="/home/tag/approve/{{tag.id}}" type="button" class="btn btn-success">Accept</a>
-                        <a href="/home/tag/reject/{{tag.id}}" type="button" class="btn btn-danger">Reject</a>
 
-                        <!-- <span type="button" class="btn btn-success">Accept</span> -->
-                        {% elif tag.status == 0 %}
-                        <span class="label label-danger">Waiting</span>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                  </div>
+
+                {% for tag in tags %}
+                <div style="margin-top:10px">
+                    {{tag.user.first_name}} {{tag.user.last_name}} 
+                    {% if tag.status == 1 %}
+                    <span class="label label-success">Approved</span>
+                    {% elif tag.status == 2 %}
+                    <span class="label label-danger">Rejected</span>
+                    {% elif tag.status == 0 and tag.user_id == loggedInUser.id %}
+                    <a href="/home/tag/approve/{{tag.id}}" type="button" class="btn btn-success">Accept</a>
+                    <a href="/home/tag/reject/{{tag.id}}" type="button" class="btn btn-danger">Reject</a>
+                    <!-- <span type="button" class="btn btn-success">Accept</span> -->
+                    {% elif tag.status == 0 %}
+                    <span class="label label-danger">Waiting</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% with postItAnyWay=post|postItAnyWayEnabled:loggedInUser  %}
+                {% if postItAnyWay == True %}
+                <a href="/home/post/postItAnyway/{{post.id}}" style="margin-top:20px" type="button" class="btn btn-success">Post it anyway</a>
+                {% endif %}
+            {% endwith %}
+            </div>
             <div class="modal fade" id="{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -100,39 +94,27 @@
                 </div>
             </div>
             {% endif %}
-
-
-
-
-
         </li>
+        
+        {% endif %}
+        {% endwith %} 
+        {% endwith %} 
         {% endfor %}
     </div>
-
-
-    <!-- <div class="col-sm-1">
-    </div> -->
-
     <div class="col-sm-3">
         <div class="public-and-friend">
             <h4>
                 Other People
             </h4>
-
             {% for user in users %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a>
             {% if not user in friends %}
             <li class="" style="margin:2px;padding:5px; list-style-type: none;  ">
-
-
                 <a class="glyphicon glyphicon-user">
                     {{ user.username }}
                 </a>
-
                 <a class="glyphicon glyphicon-plus" href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
-
                 </a>
-
             </li>
             {% endif %} {% endfor %}
             <h4 style="margin-top:40px">
@@ -141,17 +123,14 @@
             {% for friend in friends %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a>
             <li style="margin:2px;padding:5px; list-style-type: none;">
-
                 <a class="glyphicon glyphicon-user">
                     {{ friend.username }}
                 </a>
                 <a class="glyphicon glyphicon-minus" href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
-
                 </a>
             </li>
             {% endfor %}
         </div>
-
     </div>
 </div>
 {% endblock %}

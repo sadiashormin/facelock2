@@ -74,7 +74,7 @@ class HomeView(TemplateView):
                     for friendface in friendfaces:
                         fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
                         friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
-                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.56)
+                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.54)
                         # new code
                         #unknownFaceEncoding[1]
                         
@@ -152,6 +152,14 @@ def action_post(request, operation, pk):
     post = Post.objects.get(pk=pk)
     if operation == 'delete':
         post.delete()
+    if operation == 'postItAnyway':
+       Tag.objects.filter(post_id=post.id).filter(status=2).delete()
+       post.picture=post.bluredPicture
+       post.bluredPicture= None;
+       post.save()
+       
+        # post.tags
+        # post.delete()
     # elif operation == 'reject':
     #     tag.status=2
     #     tag.save()
