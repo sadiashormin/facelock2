@@ -74,7 +74,7 @@ class HomeView(TemplateView):
                     for friendface in friendfaces:
                         fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
                         friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
-                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.54)
+                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.48)
                         # new code
                         #unknownFaceEncoding[1]
                         

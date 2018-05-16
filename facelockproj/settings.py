@@ -129,6 +129,8 @@ LOGIN_EXEMPT_URLS = (
     r'^account/reset-password/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
     r'^account/reset-password/complete/$',
 )
-
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = "noreplyfacelock@gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD="security1234"
