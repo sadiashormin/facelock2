@@ -29,8 +29,10 @@ class HomeView(TemplateView):
         form = HomeForm()
         # posts = Post.objects.all().order_by('-created')
         posts = None
-       
+       #request.GET.get('Search')
         users = User.objects.exclude(id=request.user.id)
+        if request.GET.get('Search') != None:
+             users =User.objects.filter(username__startswith=request.GET.get('Search'))
         try:
             friend = Friend.objects.get(current_user=request.user)
             friends = friend.users.all()
@@ -43,7 +45,7 @@ class HomeView(TemplateView):
             posts = posts.order_by('-created')
 
         args = {
-            'form': form, 'posts': posts, 'users': users, 'friends': friends,"loggedInUser": request.user
+            'form': form, 'posts': posts, 'users': users[:5], 'friends': friends,"loggedInUser": request.user
         }
         return render(request, self.template_name, args)
 

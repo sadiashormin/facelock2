@@ -1,6 +1,6 @@
 from django import template
 from home.models import Post, Friend, Tag
-
+from accounts.models import Face
 
 register = template.Library()
 
@@ -8,6 +8,15 @@ register = template.Library()
 def getTags(post):
     # return post.id
     return Tag.objects.filter(post_id=post.id).all()
+
+@register.filter
+def getFace(user):
+    # return post.id
+    try:
+        face =Face.objects.get(user=user)
+    except:
+        face=None
+    return face
 
 @register.filter
 def shouldVisible(post, loggedInUser):
