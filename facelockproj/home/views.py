@@ -32,7 +32,7 @@ class HomeView(TemplateView):
        #request.GET.get('Search')
         users = User.objects.exclude(id=request.user.id)
         if request.GET.get('Search') != None:
-             users =User.objects.filter(username__startswith=request.GET.get('Search'))
+             users =User.objects.filter(username__startswith=request.GET.get('Search')).exclude(id=request.user.id)
         try:
             friend = Friend.objects.get(current_user=request.user)
             friends = friend.users.all()
@@ -127,7 +127,7 @@ def change_friends(request, operation, pk):
         Friend.lose_friend(request.user, friend)
     return redirect('home:home')
 
-def action_tag(request, operation, pk):
+def action_tag(request, operation, pk, area=None):
     tag = Tag.objects.get(pk=pk)
     if operation == 'approve':
         tag.status=1
@@ -139,16 +139,34 @@ def action_tag(request, operation, pk):
         picToBlur=post.bluredPicture.name if post.bluredPicture else tag.post.picture.name
         #uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+tag.post.picture.name)
         frame = cv2.imread(os.path.abspath(os.path.dirname(__file__))+"/static/"+picToBlur)
-        face_image = frame[tag.top:tag.bottom, tag.left:tag.right]  
-        face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
-        frame[tag.top:tag.bottom, tag.left:tag.right] = face_image
-        cv2.imwrite(os.path.abspath(os.path.dirname(__file__))+"/static/"+"blured"+picToBlur,frame)
-        
+        # 240/500
+        height, width, channels = frame.shape 
+        if area == None:
+            face_image = frame[tag.top:tag.bottom, tag.left:tag.right]  
+            face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
+            frame[tag.top:tag.bottom, tag.left:tag.right] = face_image
+            cv2.imwrite(os.path.abspath(os.path.dirname(__file__))+"/static/"+"blured"+picToBlur,frame)
+        else:
+            tag.status=3
+            tag.save()
+            # area = '10:20:60:100 20110:119:183:266 20348:57:123:212 20355:334:76:124'
+            viewWidth=int(area.split("!")[0])
+            ratio=float(width)/viewWidth
+            sections=area.split("!")[1].split(" ")
+            for section in sections:
+                points=map(int,section.split(":"))
+                face_image = frame[int(points[1]*ratio) :int((points[1]+points[3])*ratio), int(points[0]*ratio):int((points[0]+points[2])*ratio)]  
+                face_image = cv2.GaussianBlur(face_image, (99, 99), 90)
+                frame[int(points[1]*ratio) :int((points[1]+points[3])*ratio), int(points[0]*ratio):int((points[0]+points[2])*ratio)] = face_image
+                cv2.imwrite(os.path.abspath(os.path.dirname(__file__))+"/static/"+"blured"+picToBlur,frame)
+
         post.bluredPicture="blured"+picToBlur
         post.save()
         # find the post and the image path
         # use lib to recognize current user 
     return redirect('home:home')
+
+
 
 def action_post(request, operation, pk):
     post = Post.objects.get(pk=pk)

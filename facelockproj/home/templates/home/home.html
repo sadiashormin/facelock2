@@ -21,7 +21,7 @@
 {% extends 'base.html' %} {% load my_templatetag %} {% block body %}
 <div class="container">
     <div class="col-sm-9 homeCol">
-        <h4>Welcome! </h4>
+        <h3>Welcome! {{user.get_full_name}}</h3>
         <!-- <div>This is your home page. </div> -->
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %} {{ form.post }}
@@ -48,11 +48,17 @@
             </div>
             <p>{{ post.post|safe }}</p>
             <!-- {{ post | lower}} -->
+            <div>
             {% load static %} {% if post.picture %}
             <img src="/static/{{ post.picture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
             /> {% if post.bluredPicture %}
-            <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
-            /> {% endif %}
+            <span class="glyphicon glyphicon-arrow-right" style="font-size:30px"></span>
+            <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" 
+            /> 
+            </div>
+            {% comment %} <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
+            />  {% endcomment %}
+                {% endif %}
             <div>
 
 
@@ -60,12 +66,15 @@
                 <div style="margin-top:10px">
                     {{tag.user.first_name}} {{tag.user.last_name}} 
                     {% if tag.status == 1 %}
-                    <span class="label label-success">Approved</span>
+                    <span > has approved the post</span>
                     {% elif tag.status == 2 %}
-                    <span class="label label-danger">Rejected</span>
+                    <span >has blured the face</span>
+                    {% elif tag.status == 3 %}
+                    <span>has customized the post</span>
                     {% elif tag.status == 0 and tag.user_id == loggedInUser.id %}
                     <a href="/home/tag/approve/{{tag.id}}" type="button" class="btn btn-success">Accept</a>
-                    <a href="/home/tag/reject/{{tag.id}}" type="button" class="btn btn-danger">Reject</a>
+                    <a href="/home/tag/reject/{{tag.id}}" type="button" class="btn btn-danger">Blur my face</a>
+                    <a data-toggle="modal" data-target="#{{ post.id }}" type="button" class="btn btn-danger">Custom</a>
                     <!-- <span type="button" class="btn btn-success">Accept</span> -->
                     {% elif tag.status == 0 %}
                     <span class="label label-danger">Waiting</span>
@@ -75,6 +84,8 @@
             {% with postItAnyWay=post|postItAnyWayEnabled:loggedInUser  %}
                 {% if postItAnyWay == True %}
                 <a href="/home/post/postItAnyway/{{post.id}}" style="margin-top:20px" type="button" class="btn btn-success">Post it anyway</a>
+                
+              
                 {% endif %}
             {% endwith %}
             </div>
@@ -88,11 +99,28 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <img src="/static/{{ post.picture }}" style="width:100%;" />
+                                {% if post.bluredPicture %}
+                                 <img src="/static/{{ post.bluredPicture }}" style="width:100%;" />
+                                {% else %}
+                                <img src="/static/{{ post.picture }}" style="width:100%;" />
+                                {% endif %}
+                            
+                            {% for tag in tags %}
+                            {% if tag.status == 0 and tag.user_id == loggedInUser.id %}
+                            <div style="display:flex; justify-content: space-between; margin-top:20px">
+                                    <a  data-toggle="modal" type="button" class="editImage btn btn-danger">Edit</a>
+                                    <a data-toggle="modal" postid="{{ tag.id }}" type="button" class="blurArea btn btn-danger">Blur Selected Area</a>
+                            </div>
+                            
+                            {% comment %} <span class="editImage">edit</span> <span class="blurAreas">blur areas</span> {% endcomment %}
+                            {% endif %}
+                            {% endfor %}
+                            
                         </div>
                     </div>
                 </div>
             </div>
+            
             {% endif %}
         </li>
         
@@ -103,28 +131,98 @@
     </div>
     <div class="col-sm-3">
         <div class="public-and-friend">
-            <h4>
-                Other People
-            </h4>
+                <form method="get" >
+                        {% csrf_token %}
+                        <input type="text" placeholder="search" style="width:100%; height:40px"  name="Search" />
+                </form>
+            <h5 style="height:30px; background-color:#CCC; display:flex; align-items:center;padding:5px">
+                OTHERS
+            </h5>
+            <div>
+                    
+               
+            </div>
             {% for user in users %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}"></a>
             {% if not user in friends %}
-            <li class="" style="margin:2px;padding:5px; list-style-type: none;  ">
-                <a class="glyphicon glyphicon-user">
-                    {{ user.username }}
+            <li class="" style="margin:2px;padding:5px; list-style-type: none; align-items:center; border-bottom:1px solid #CCC  ">
+                <a class="">
+                        {% with face=user|getFace %}
+                           
+                            <div style="width:50px; height:50px; overflow: hidden">
+                                    {% if face.picture %}
+                                    <img src="/static/{{ face.picture }}" style="width:100%" data-toggle="modal" data-target="#pic{{ user.id }}" />
+                                    {% else %}
+                                    <img src="/static/defaultface.png" style="width:100%" data-toggle="modal" data-target="#pic{{ user.id }}"  />
+                                    {% endif %}
+                            </div>
+                                        
+                                <div class="modal fade" id="pic{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">{{ user.username }} </h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                    {% if face.picture %}
+                                                    <img src="/static/{{ face.picture }}" style="width:100%" />
+                                                    {% else %}
+                                                    <img src="/static/defaultface.png" style="width:100%" />
+                                                    {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        {% endwith%}
+                        
+                    <div>{{ user.username }} </div> 
                 </a>
                 <a class="glyphicon glyphicon-plus" href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
                 </a>
             </li>
             {% endif %} {% endfor %}
-            <h4 style="margin-top:40px">
-                Friends
-            </h4>
+            
+            <h5 style="height:30px; background-color:#CCC; display:flex; align-items:center;padding:5px">
+                    FRIENDS
+                </h5>
             {% for friend in friends %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}"></a>
-            <li style="margin:2px;padding:5px; list-style-type: none;">
-                <a class="glyphicon glyphicon-user">
-                    {{ friend.username }}
+            <li style="margin:2px;padding:5px; list-style-type: none; align-items:center; border-bottom:1px solid #CCC ">
+                <a>
+                        {% with face=friend|getFace %}
+                           
+                            <div style="width:50px; height:50px; overflow: hidden">
+                                    {% if face.picture %}
+                                    <img src="/static/{{ face.picture }}" style="width:100%" data-toggle="modal" data-target="#pic{{ friend.id }}" />
+                                    {% else %}
+                                    <img src="/static/defaultface.png" style="width:100%" data-toggle="modal" data-target="#pic{{ friend.id }}"  />
+                                    {% endif %}
+                            </div>
+                                        
+                                <div class="modal fade" id="pic{{ friend.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">{{ friend.username }} </h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                    {% if face.picture %}
+                                                    <img src="/static/{{ face.picture }}" style="width:100%" />
+                                                    {% else %}
+                                                    <img src="/static/defaultface.png" style="width:100%" />
+                                                    {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        {% endwith%}
+                    <div>{{ friend.username }}</div>
                 </a>
                 <a class="glyphicon glyphicon-minus" href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
                 </a>

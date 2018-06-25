@@ -44,7 +44,7 @@ def postItAnyWayEnabled(post, loggedInUser):
             if tag.user_id != loggedInUser.id:
                 if tag.status == 0:
                     isPending = True
-                if tag.status == 2:
+                if tag.status == 2 or tag.status == 3:
                     hasAnyOneRejected = True
         if isPending == False and hasAnyOneRejected == True:
             postItAnyWayEnabled = True
