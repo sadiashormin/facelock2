@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "facelock-208804",
+  "private_key_id": "aee2366fc39212629d27a6d49af7db70baccd0cb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmVltP1D7a96my\nmbUvbmW2l9+Kc6FI9kkLLOJF6dtKDd6B7Q8vm0I7KdDAerPMfYbkwX/H4o0O/z1P\nn4GDjDSuMkGqScezqBqlKRv7VEQXrgRP4nskq0MUW5PZ1VVfDOTS65Hk21RoTwnx\nZSGKtyPJKZKwVmlN3imEtQILnpC19ywlmv82M4xg0jKNzpxZZeAjP7kcrvLhsMU1\nJuxAJKPK90D+8OGL3l6JhYFPqdCBdlGJSv1GmiKMopeibvlPTPNAeb7/9PyMq42e\nU++OQUUlwrTQPoN6i3DPdugi1JyBA1XOPhjwjdCMeyKxT7sd7ZC/7eDiiVNvgSJL\ngJn8v/GPAgMBAAECggEAOZZlR6aKWmHrMQfROEom0cgT3wm4WZvW3xUbg6v6vVE+\n60mI++jrTbNk7/arQA1ngdRSKoBPaNVKQ0JMYyBL7tE8dbnUd2koTG0GoIVki7Q2\nDvgwvRnEAAzSi9S1mVJL+JARMyQSPYi7vwTNz4onTBJmFEHedFSJmEXYnvA3Vp/c\nVc1FbaKXfl0Epx7Ng72LAA56B10ZOTNT1AnYZ3nbNxcvCUod1JOesA4vfLyYgq16\n0TyJN/3nqNgldRMenziZDT4yo7CKS+kNy9Hd1ME8ho6jmyQFO8q7+O9BrSDcDaED\nnV5y6lp8x5lyOSfIO+syFChDKR26S4feqdDI1jJl4QKBgQDkxyNF97Rllb12m9dS\n7sKZJ7CjHwg8FEwWUdFsWXfe3RBBNKtEUXHwiTRWQDLx6jW9toJNlPJU1Q/DLjVf\n5o/lL1ADgWe66L0rZ/Hz6eINrUFVFN2CjIhcIAhfWhUNaoYMjJ6CbohqH0uTHpzJ\nrHMsDF7WMTu5Zv9gw90jj5qIYQKBgQC6ITN9EwNCg/ioJ1bq+Upme6QX6pT6AqLS\nlSApOp8KqEWgTfOCG6IsDqXIYG8fAD/pbFUibwBQp//50HjPA+nQ8cy/NpmCd0l6\nbqo4FoqVnFZoStrHoHL5eZrVtKRaqxaPQX+hyBaMYueXFKAefjeVI9F7eIBaPkdS\nBqS2mOL/7wKBgDVuNNTAd0dKY4dx+iYKUTSHyn8uXjP54ZNM5IZTluVb59HyxRUd\nmGi/ApQqRjutoYN/Potz/+zEHfxNrHWLWYwDMsK+1EUY2iVrD10SAJOFJT8DsoAs\n5iPt70aluUj62ffQV6zKt91hFbt0aNXJCtT8xqFrujEg1v/4fosxnLvBAoGBAJ2p\n5g16f3Zmh8kYmb2ssWMiNJu1r8AfX4D1pSqHZ5UFeQUTQsPhWHvtZGzZkwc1lO3L\nQEpMsH2h8WjROKRS8kp1qDQIsfwbw3gcKcAdCAM3TNJHJg+XUA0W/xsrS1UqO4/Z\nsZ1++eqtFPObGw75Z2fD0Xy/VCodOxi2W+v4kcCtAoGAPl0BJZ0iY5GdngfCrAju\ngVq1BBBQluUuki72oc+9NKT66MDY2o989Q/2n6PtQwHPyzMRnH/8624DoFafoLEX\naHTMusJXA1wZzmIFnx9fIiPbOXH57brU5Kn/hI0tRevUns48M+tIFgKp4Zoq2z/1\nNBOCSr6kAQiEWjNSnz5qrpQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "facelockserviceaccount@facelock-208804.iam.gserviceaccount.com",
+  "client_id": "104859029151327488786",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/facelockserviceaccount%40facelock-208804.iam.gserviceaccount.com"
+}

@@ -9,6 +9,15 @@ import cv2
 import os
 from django import template
 
+# Imports the Google Cloud client library---->
+import io
+import os
+from google.cloud import vision
+from google.cloud.vision import types
+# <----
+import time
+from latlon import get_exif_data, get_lat_lon
+
 register = template.Library()
 
 # @register.simple_tag
@@ -20,12 +29,34 @@ register = template.Library()
 
 class HomeView(TemplateView):
     template_name = 'home/home.html'
+    def googlecloudplatformexperiement(self,imagename):
+        client = vision.ImageAnnotatorClient()
+        file_name=os.path.abspath(os.path.dirname(__file__))+"/static/"+imagename
+        # file_name = os.path.join(
+        #     os.path.dirname(__file__),
+        #     "/static/"+imagename)
 
+        # Loads the image into memory
+        with io.open(file_name, 'rb') as image_file:
+            content = image_file.read()
 
+        image = types.Image(content=content)
 
-  
-        
+        # Performs label detection on the image file
+        response = client.label_detection(image=image)
+        labels = response.label_annotations
+
+        print('Labels:')
+        labelcsv=""
+        for label in labels:
+            if labelcsv =="":
+                labelcsv= label.description
+            else:
+                labelcsv= labelcsv+","+label.description
+        return labelcsv
+   
     def get(self, request):
+        
         form = HomeForm()
         # posts = Post.objects.all().order_by('-created')
         posts = None
@@ -54,6 +85,7 @@ class HomeView(TemplateView):
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user
+            
             post.save()
             text = form.cleaned_data['post']
             form = HomeForm()
@@ -69,6 +101,7 @@ class HomeView(TemplateView):
                 pass
 
             if(post.picture):
+               
                 uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name)
                 uploadedPhotoEncodlings = face_recognition.face_encodings(uploadedPhoto)
                 # taggedPersonsNameString="";
@@ -112,7 +145,12 @@ class HomeView(TemplateView):
             # if(taggedPersonsNameString):
             #     post.post=post.post+"<br/>TAGGED " +taggedPersonsNameString
             #     post.save()
-            
+                labels=self.googlecloudplatformexperiement(post.picture.name)
+                lat,lon = get_lat_lon(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
+                post.lat=lat
+                post.lon=lon
+                post.labels=labels
+                post.save()
             return redirect('home:home')
 
         args = {'form': form, 'text': text}

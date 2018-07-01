@@ -5,6 +5,6 @@
 		}
 	],
 	"settings": {
-		"python.pythonPath": "${workspaceFolder}/django-env/bin/python3"
+		"python.pythonPath": "/usr/local/bin/python"
 	}
 }

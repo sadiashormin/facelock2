@@ -64,7 +64,9 @@
                 "--noreload",
                 "--nothreading"
             ],
-            "env": {},
+            "env": {
+                "GOOGLE_APPLICATION_CREDENTIALS": "/Users/mohammadmahboburrahman/Documents/workshop/sadia/facelock2/facelock-aee2366fc392.json"
+            },
             "envFile": "${workspaceFolder}/.env",
             "debugOptions": [
                 "RedirectOutput",
@@ -173,7 +175,9 @@
                 "runserver",
                 "--noreload=True"
             ],
-            "env": {},
+            "env": {
+                "GOOGLE_APPLICATION_CREDENTIALS": "/Users/mohammadmahboburrahman/Documents/workshop/sadia/facelock2/facelock-aee2366fc392.json"
+            },
             "envFile": "${workspaceFolder}/.env",
             "debugOptions": [
                 "RedirectOutput"

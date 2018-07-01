@@ -9,6 +9,10 @@ class Post(models.Model):
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    labels = models.TextField(null=True)
+    timestamp = models.DateTimeField(null=True, blank=True)
+    lat = models.CharField(max_length=100,null=True)
+    lon = models.CharField(max_length=100,null=True)
 
 class Tag(models.Model):
     post = models.ForeignKey(Post)
