@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+from datetime import datetime
 
 def get_exif_data(path):
     """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
@@ -66,6 +67,20 @@ def get_lat_lon(exif_data):
                 lon = 0 - lon
 
     return lat, lon
+
+def get_timespan(exif_data):
+    """Returns the time"""
+    timespan = None
+
+    if "DateTime" in exif_data:		
+        timespan = exif_data["DateTime"]
+        d, t = timespan.split()
+        year, month, day = d.split(':')
+        hour, minute, second = t.split(':')
+        timespan = datetime(int(year), int(month), int(day),
+                                int(hour), int(minute), int(second))
+
+    return timespan
 
 
 

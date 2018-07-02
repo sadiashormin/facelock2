@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class Post(models.Model):
     post = models.CharField(max_length=500)
+    status=models.IntegerField(default=0)
     picture = models.ImageField()
     bluredPicture = models.ImageField(null=True)
     user = models.ForeignKey(User)

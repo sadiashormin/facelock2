@@ -20,6 +20,8 @@ def getFace(user):
 
 @register.filter
 def shouldVisible(post, loggedInUser):
+    if post.status == 0 and post.user.id != loggedInUser.id:
+        return False 
     tags = Tag.objects.filter(post_id=post.id).all()
     visible = True
     if post.user.id != loggedInUser.id:

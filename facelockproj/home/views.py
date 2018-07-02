@@ -16,7 +16,7 @@ from google.cloud import vision
 from google.cloud.vision import types
 # <----
 import time
-from latlon import get_exif_data, get_lat_lon
+from latlon import get_exif_data, get_lat_lon,get_timespan
 
 register = template.Library()
 
@@ -67,7 +67,7 @@ class HomeView(TemplateView):
         try:
             friend = Friend.objects.get(current_user=request.user)
             friends = friend.users.all()
-            posts = Post.objects.filter(user_id__in=Friend.objects.get(current_user=request.user).users.all()) | Post.objects.filter(user=request.user)
+            posts = Post.objects.filter( user_id__in=Friend.objects.get(current_user=request.user).users.all()) | Post.objects.filter(user=request.user)
             posts = posts.order_by('-created')
         except:
             friend = None
@@ -150,6 +150,7 @@ class HomeView(TemplateView):
                 post.lat=lat
                 post.lon=lon
                 post.labels=labels
+                post.timestamp=get_timespan(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
                 post.save()
             return redirect('home:home')
 
@@ -212,8 +213,12 @@ def action_post(request, operation, pk):
         post.delete()
     if operation == 'postItAnyway':
        Tag.objects.filter(post_id=post.id).filter(status=2).delete()
+       Tag.objects.filter(post_id=post.id).filter(status=3).delete()
        post.picture=post.bluredPicture
        post.bluredPicture= None;
+       post.save()
+    if operation == 'confirmed':
+       post.status=1
        post.save()
        
         # post.tags
