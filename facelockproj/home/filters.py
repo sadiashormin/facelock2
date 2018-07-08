@@ -1,6 +1,7 @@
 from django import template
 from home.models import Post, Friend, Tag
 from accounts.models import Face
+import decimal
 
 register = template.Library()
 
@@ -51,3 +52,25 @@ def postItAnyWayEnabled(post, loggedInUser):
         if isPending == False and hasAnyOneRejected == True:
             postItAnyWayEnabled = True
     return postItAnyWayEnabled
+
+@register.filter
+def showPossibleInferredPost(post, loggedInUser):
+    friend = Friend.objects.get(current_user=loggedInUser)
+    friends = friend.users.all()
+    posts = Post.objects.filter( user_id__in=Friend.objects.get(current_user=loggedInUser).users.all() ).exclude(user_id = loggedInUser.id )
+    #remove post without lat long & time
+    posts = posts.exclude(lat = None);
+    posts = posts.exclude(lon = None);
+    posts = posts.exclude(timestamp = None);
+    radius=decimal.Decimal(.0001) #.01 mile radius
+    # remove post which are farther than .2 mile
+    posts = posts.exclude( lat__gt=(post.lat+radius));
+    posts = posts.exclude( lat__lt=(post.lat-radius));
+
+    posts = posts.exclude( lon__gt=(post.lon+radius));
+    posts = posts.exclude( lon__lt=(post.lon-radius));
+    #remove post which are not exposed to friends yet.
+    posts = posts.exclude( status=0);
+    posts = posts.exclude( status=1);
+    posts = posts.order_by('-created')
+    return posts

@@ -55,7 +55,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
             'libraries':{
-            'my_templatetag': 'home.my_templatetag',
+            'filters': 'home.filters',
 
             }
         },

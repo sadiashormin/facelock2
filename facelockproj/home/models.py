@@ -12,8 +12,8 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
     labels = models.TextField(null=True)
     timestamp = models.DateTimeField(null=True, blank=True)
-    lat = models.CharField(max_length=100,null=True)
-    lon = models.CharField(max_length=100,null=True)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    lon = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
 class Tag(models.Model):
     post = models.ForeignKey(Post)

@@ -19,7 +19,7 @@
         padding: 1px;
     }
 </style>
-{% extends 'base.html' %} {% load my_templatetag %} {% block body %}
+{% extends 'base.html' %} {% load filters %} {% block body %}
 <div class="container">
     <div class="col-sm-3">
             <div >
@@ -84,7 +84,11 @@
                         {% comment %} <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
                         />  {% endcomment %}
                             {% endif %}
-                        <div>
+                        <div style="background-color: #EBEDF0;
+                        padding: 20px;
+                        margin-top: 20px;
+                        border-top: 1px solid #CCC;
+                        padding-top: 0px;">
             
             
                             {% for tag in tags %}
@@ -108,18 +112,47 @@
                             </div>
                          
                             {% endfor %}
-                            <div style="margin-top:20">
-                                    <span class="badge"> Possible Labels: </span>
-                                        <span>{{ post.labels|default_if_none:"" }}</span>
-                                </div>
-                                <div style="margin-top:20">
-                                        <span class="badge"> Location: </span>
-                                            <span>{{ post.lat|default_if_none:"Could not locate" }}</span>
-                                            <span>{{ post.lon|default_if_none:"" }}</span>
-                                 </div>
-                                 <div style="margin-top:20">
-                                        <span class="badge"> Time: </span>
-                                            <span>{{ post.timestamp|default_if_none:"Could not detect" }}</span>
+                                    {% if post.status == 0 and post.user.id == loggedInUser.id  %}
+                                        <div style="margin-top:20;">
+                                            <span class="badge"> Possible Labels: </span>
+                                                <span>{{ post.labels|default_if_none:"" }}</span>
+                                        </div>
+                                        <div style="margin-top:20">
+                                                <span class="badge"> Location: </span>
+                                                    <span>{{ post.lat|default_if_none:"Could not locate" }}</span>
+                                                    <span>{{ post.lon|default_if_none:"" }}</span>
+                                        </div>
+                                        <div style="margin-top:20">
+                                                <span class="badge"> Time: </span>
+                                                    <span>{{ post.timestamp|default_if_none:"Could not detect" }}</span>
+                                        </div>
+                                    {% endif %}
+                                 <div>
+                                    {% if post.status == 0 and post.user.id == loggedInUser.id %}
+                                        {% with infPosts=post|showPossibleInferredPost:loggedInUser  %}
+                                        {% if infPosts.count > 0 %}
+                                            <div style="margin-top:20px">
+                                               <h7> Picture taken at the same location and time</h7>
+                                            
+                                                    {% for infPost in infPosts %} 
+                                                    <div style="width:33%" >
+                                                           
+                                                            <div>
+                                                                {% if infPost.bluredPicture %}
+                                                                <img src="/static/{{ infPost.bluredPicture }}" style="width:100%;"  />
+                                                                {% else %}
+                                                                <img src="/static/{{ infPost.picture }}" style="width:100%;" />
+                                                                {% endif %}
+                                                           </div>
+                                                           <span>Posted by
+                                                                <strong>{{ post.user.get_full_name }} </strong>
+                                                        </span>
+                                                    </div>
+                                                    {% endfor %}
+                                            </div>
+                                        {% endif %}    
+                                        {% endwith %}
+                                    {% endif %}
                                  </div>
                             {% if post.status == 0 and post.user.id == loggedInUser.id  %}
                             <a href="/home/post/confirmed/{{post.id}}" style="margin-top:20px;width: 100%;" type="button" class="btn btn-info">POST</a>
