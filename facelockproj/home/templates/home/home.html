@@ -131,23 +131,29 @@
                                     {% if post.status == 0 and post.user.id == loggedInUser.id %}
                                         {% with infPosts=post|showPossibleInferredPost:loggedInUser  %}
                                         {% if infPosts.count > 0 %}
-                                            <div style="margin-top:20px">
-                                               <h7> Picture taken at the same location and time</h7>
+                                            <div style="margin-top:20px" class="col-xs-12">
+                                               <div style="margin-bottom:20px"> Picture taken at the same location and time</div>
                                             
                                                     {% for infPost in infPosts %} 
-                                                    <div style="width:33%" >
+                                                    <div class="col-xs-12" style="margin-bottom:10px"  >
                                                            
-                                                            <div>
+                                                            <div class="col-xs-6">
                                                                 {% if infPost.bluredPicture %}
                                                                 <img src="/static/{{ infPost.bluredPicture }}" style="width:100%;"  />
                                                                 {% else %}
                                                                 <img src="/static/{{ infPost.picture }}" style="width:100%;" />
                                                                 {% endif %}
                                                            </div>
-                                                           <span>Posted by
-                                                                <strong>{{ post.user.get_full_name }} </strong>
-                                                        </span>
+                                                           <div class="col-xs-6">Posted by
+                                                                <strong>{{ post.user.get_full_name }} </strong> <br/>
+                                                                {% with labels=post|getCommonLabels:infPost  %}
+                                                                {% for label in labels %} 
+                                                                    {{label}},
+                                                                {% endfor %}
+                                                                {% endwith %}
+                                                           </div>
                                                     </div>
+                                                   
                                                     {% endfor %}
                                             </div>
                                         {% endif %}    

@@ -2,7 +2,8 @@ from django import template
 from home.models import Post, Friend, Tag
 from accounts.models import Face
 import decimal
-
+from datetime import datetime, timedelta
+from sets import Set
 register = template.Library()
 
 @register.filter
@@ -63,14 +64,36 @@ def showPossibleInferredPost(post, loggedInUser):
     posts = posts.exclude(lon = None);
     posts = posts.exclude(timestamp = None);
     radius=decimal.Decimal(.0001) #.01 mile radius
+    hourDiff= 1 # 1 hour
+    
+
     # remove post which are farther than .2 mile
     posts = posts.exclude( lat__gt=(post.lat+radius));
     posts = posts.exclude( lat__lt=(post.lat-radius));
 
     posts = posts.exclude( lon__gt=(post.lon+radius));
     posts = posts.exclude( lon__lt=(post.lon-radius));
+
+    # remove post which are not taken within an hour
+    minTime=post.timestamp - timedelta(hours=hourDiff)
+    posts = posts.exclude( timestamp__lt=minTime);
+
+    maxTime=post.timestamp + timedelta(hours=hourDiff)
+    posts = posts.exclude( timestamp__gt=maxTime);
+    
+
     #remove post which are not exposed to friends yet.
     posts = posts.exclude( status=0);
-    posts = posts.exclude( status=1);
+  
     posts = posts.order_by('-created')
     return posts
+
+
+@register.filter
+def getCommonLabels(post, infPost):
+    pl=post.labels.split(',')
+    ipl=infPost.labels.split(',')
+    lables=list(set.intersection(set(pl),set(ipl)))
+
+    #lables=['grass', 'cow', 'cat', 'dog']
+    return lables;
