@@ -29,31 +29,7 @@ register = template.Library()
 
 class HomeView(TemplateView):
     template_name = 'home/home.html'
-    def googlecloudplatformexperiement(self,imagename):
-        client = vision.ImageAnnotatorClient()
-        file_name=os.path.abspath(os.path.dirname(__file__))+"/static/"+imagename
-        # file_name = os.path.join(
-        #     os.path.dirname(__file__),
-        #     "/static/"+imagename)
-
-        # Loads the image into memory
-        with io.open(file_name, 'rb') as image_file:
-            content = image_file.read()
-
-        image = types.Image(content=content)
-
-        # Performs label detection on the image file
-        response = client.label_detection(image=image)
-        labels = response.label_annotations
-
-        print('Labels:')
-        labelcsv=""
-        for label in labels:
-            if labelcsv =="":
-                labelcsv= label.description
-            else:
-                labelcsv= labelcsv+","+label.description
-        return labelcsv
+   
    
     def get(self, request):
         
@@ -79,84 +55,98 @@ class HomeView(TemplateView):
             'form': form, 'posts': posts, 'users': users[:5], 'friends': friends,"loggedInUser": request.user
         }
         return render(request, self.template_name, args)
-
+    
     def post(self, request):
         form = HomeForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user
-            
+            post.status = 1
             post.save()
+            
             text = form.cleaned_data['post']
             form = HomeForm()
 
             # friend = None
             # friends = None
-            friendfaces=None;
-            try:
-                friend = Friend.objects.get(current_user=request.user)
-                # friends = friend.users.all()
-                friendfaces=Face.objects.filter(user_id__in=friend.users.all())
-            except:
-                pass
+           
 
-            if(post.picture):
-               
-                uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name)
-                uploadedPhotoEncodlings = face_recognition.face_encodings(uploadedPhoto)
-                # taggedPersonsNameString="";
-                for i in range(0,len(uploadedPhotoEncodlings)):
-                    for friendface in friendfaces:
-                        fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
-                        friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
-                        results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.48)
-                        # new code
-                        #unknownFaceEncoding[1]
-                        
-                        # for top, right, bottom, left in face_locations:
-                        #     # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-                        #     top *= 4
-                        #     right *= 4
-                        #     bottom *= 4
-                        #     left *= 4
-                        #     face_image = uploadedPhoto[top:bottom, left:right]
-
-                        #     # Blur the face image
-                        #     face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
-
-
-                        if results[0] == True:
-                            # taggedPersonsNameString=taggedPersonsNameString+friendface.user.username+","
-                            face_locations = face_recognition.face_locations(uploadedPhoto)
-                            top, right, bottom, left = face_locations[i]
-
-                            t = Tag()
-                            t.user=friendface.user
-                            t.post=post
-                            t.status=0
-                            t.top=int(top)
-                            t.right=int(right)
-                            t.bottom=int(bottom)
-                            t.left=int(left)
-                            t.save()
-                            
-                        else:
-                            c=3
-            # if(taggedPersonsNameString):
-            #     post.post=post.post+"<br/>TAGGED " +taggedPersonsNameString
-            #     post.save()
-                labels=self.googlecloudplatformexperiement(post.picture.name)
-                lat,lon = get_lat_lon(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
-                post.lat=lat
-                post.lon=lon
-                post.labels=labels
-                post.timestamp=get_timespan(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
-                post.save()
+            tagLabelMetaSave(post, request)
             return redirect('home:home')
 
         args = {'form': form, 'text': text}
         return render(request, self.template_name, args)
 
+
+def tagLabelMetaSave(post, request):
+    if(post.picture):
+        post.status = 0
+        friendfaces=None;
+        try:
+            friend = Friend.objects.get(current_user=request.user)
+            friendfaces=Face.objects.filter(user_id__in=friend.users.all())
+        except:
+            pass
+        uploadedPhoto = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name)
+        uploadedPhotoEncodlings = face_recognition.face_encodings(uploadedPhoto)
+        # taggedPersonsNameString="";
+        for i in range(0,len(uploadedPhotoEncodlings)):
+            for friendface in friendfaces:
+                fndpic = face_recognition.load_image_file(os.path.abspath(os.path.dirname(__file__))+"/static/"+friendface.picture.name)
+                friendpicEncoding = face_recognition.face_encodings(fndpic)[0]
+                results = face_recognition.compare_faces([uploadedPhotoEncodlings[i]], friendpicEncoding, tolerance=0.48)
+                if results[0] == True:
+                    # taggedPersonsNameString=taggedPersonsNameString+friendface.user.username+","
+                    face_locations = face_recognition.face_locations(uploadedPhoto)
+                    top, right, bottom, left = face_locations[i]
+
+                    t = Tag()
+                    t.user=friendface.user
+                    t.post=post
+                    t.status=0
+                    t.top=int(top)
+                    t.right=int(right)
+                    t.bottom=int(bottom)
+                    t.left=int(left)
+                    t.save()
+                    
+                else:
+                    c=3
+        labels=googlecloudplatformexperiement(post.picture.name)
+        lat,lon = get_lat_lon(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
+        if post.lat == None:
+            post.lat=lat
+            post.lon=lon
+            post.timestamp=get_timespan(get_exif_data(os.path.abspath(os.path.dirname(__file__))+"/static/"+post.picture.name))
+        post.labels=labels
+        
+        post.save()
+
+def googlecloudplatformexperiement(imagename):
+    client = vision.ImageAnnotatorClient()
+    file_name=os.path.abspath(os.path.dirname(__file__))+"/static/"+imagename
+    # file_name = os.path.join(
+    #     os.path.dirname(__file__),
+    #     "/static/"+imagename)
+
+    # Loads the image into memory
+    with io.open(file_name, 'rb') as image_file:
+        content = image_file.read()
+
+    image = types.Image(content=content)
+
+    # Performs label detection on the image file
+    response = client.label_detection(image=image)
+    labels = response.label_annotations
+
+    print('Labels:')
+    labelcsv=""
+    for label in labels:
+        if labelcsv =="":
+            labelcsv= label.description
+        else:
+            labelcsv= labelcsv+","+label.description
+    return labelcsv
 
 def change_friends(request, operation, pk):
     friend = User.objects.get(pk=pk)
@@ -167,11 +157,13 @@ def change_friends(request, operation, pk):
     return redirect('home:home')
 
 def action_tag(request, operation, pk, area=None):
-    tag = Tag.objects.get(pk=pk)
+
     if operation == 'approve':
+        tag = Tag.objects.get(pk=pk)
         tag.status=1
         tag.save()
     elif operation == 'reject':
+        tag = Tag.objects.get(pk=pk)
         tag.status=2
         tag.save()
         post = tag.post
@@ -202,7 +194,34 @@ def action_tag(request, operation, pk, area=None):
         post.bluredPicture="blured"+picToBlur
         post.save()
         # find the post and the image path
-        # use lib to recognize current user 
+        # use lib to recognize current user
+    if operation == 'checkpost':
+        post = Post.objects.get(pk=pk)
+
+        picToBlur=post.bluredPicture.name if post.bluredPicture else post.picture.name
+        frame = cv2.imread(os.path.abspath(os.path.dirname(__file__))+"/static/"+picToBlur)
+        height, width, channels = frame.shape 
+        viewWidth=int(area.split("!")[0])
+        ratio=float(width)/viewWidth
+        sections=area.split("!")[1].split(" ")
+        for section in sections:
+            points=map(int,section.split(":"))
+            face_image = frame[int(points[1]*ratio) :int((points[1]+points[3])*ratio), int(points[0]*ratio):int((points[0]+points[2])*ratio)]  
+            face_image = cv2.GaussianBlur(face_image, (99, 99), 90)
+            frame[int(points[1]*ratio) :int((points[1]+points[3])*ratio), int(points[0]*ratio):int((points[0]+points[2])*ratio)] = face_image
+            cv2.imwrite(os.path.abspath(os.path.dirname(__file__))+"/static/"+"blured"+picToBlur,frame)
+        post.bluredPicture="blured"+picToBlur
+        # post.save()
+
+        post.label = None
+        Tag.objects.filter(post_id=post.id).filter(status=1).delete()
+        Tag.objects.filter(post_id=post.id).filter(status=2).delete()
+        Tag.objects.filter(post_id=post.id).filter(status=3).delete()
+        post.picture=post.bluredPicture
+        post.bluredPicture= None;
+        post.save()
+        tagLabelMetaSave(post,request)
+
     return redirect('home:home')
 
 
@@ -212,19 +231,19 @@ def action_post(request, operation, pk):
     if operation == 'delete':
         post.delete()
     if operation == 'postItAnyway':
-       Tag.objects.filter(post_id=post.id).filter(status=2).delete()
-       Tag.objects.filter(post_id=post.id).filter(status=3).delete()
-       post.picture=post.bluredPicture
-       post.bluredPicture= None;
-       post.save()
+        Tag.objects.filter(post_id=post.id).filter(status=2).delete()
+        Tag.objects.filter(post_id=post.id).filter(status=3).delete()
+        post.picture=post.bluredPicture
+        post.bluredPicture= None;
+        post.save()
     if operation == 'confirmed':
-       post.status=1
-       post.save()
-       
-        # post.tags
-        # post.delete()
-    # elif operation == 'reject':
-    #     tag.status=2
-    #     tag.save()
+        post.status=1
+        post.save()
+    
+    # post.tags
+    # post.delete()
+# elif operation == 'reject':
+#     tag.status=2
+#     tag.save()
     return redirect('home:home')
 

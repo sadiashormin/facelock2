@@ -8,5 +8,7 @@ urlpatterns = [
     # url(r'^tag/(?P<operation>.+)/(?P<pk>\d+)/(?P<area>.+)/$', views.action_area, name='change_area'),
     url(r'^tag/(?P<operation>.+)/(?P<pk>\d+)/(?P<area>.+)/$', views.action_tag, name='change_area'),
     url(r'^tag/(?P<operation>.+)/(?P<pk>\d+)/$', views.action_tag, name='change_tag'),
+
+    
     url(r'^connect/(?P<operation>.+)/(?P<pk>\d+)/$', views.change_friends, name='change_friends')
 ]

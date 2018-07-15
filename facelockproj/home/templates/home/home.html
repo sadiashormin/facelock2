@@ -60,7 +60,7 @@
         <li style=" margin:2px; list-style-type: none;margin-bottom: 20px;
         border-bottom: 7px solid #CCC;
         padding-bottom: 20px;" class="post{% if post.status == 0 and post.user.id == loggedInUser.id %}highlighted{% endif %}" >
-            <div class="overlay" role="presentation"></div>
+            <div class="overlay" role="presentation"></div> 
             <div class="post-content">
                     <div style="display: flex; justify-content: space-between">
                             <span>Posted by
@@ -75,8 +75,14 @@
                         <!-- {{ post | lower}} -->
                         <div>
                         {% load static %} {% if post.picture %}
+                        {% if post.status == 0 and post.user_id == loggedInUser.id %}
+                        <img src="/static/{{ post.picture }}" style="width:100%;" alt="My image" 
+                        /> 
+                        {% else %}
                         <img src="/static/{{ post.picture }}" style="width:100%;" alt="My image" data-toggle="modal" data-target="#{{ post.id }}"
-                        /> {% if post.bluredPicture %}
+                        /> 
+                        {%endif%}
+                        {% if post.bluredPicture %}
                         <span class="glyphicon glyphicon-arrow-right" style="font-size:30px"></span>
                         <img src="/static/{{ post.bluredPicture }}" style="width:300px;" alt="My image" 
                         /> 
@@ -112,6 +118,14 @@
                             </div>
                          
                             {% endfor %}
+
+                            {% if post.status == 0 and post.user_id == loggedInUser.id %}
+                            <div style="margin-top:10px">
+                                <span id="prepost-pic-edit-button"  type="button" class="btn btn-danger">Edit Image</span>
+                                <span id="prepost-pic-blur-check-button" postid="{{ post.id }}"  type="button" class="btn btn-danger">Blur and check </span>
+                            </div>
+                            {% endif %} 
+
                                     {% if post.status == 0 and post.user.id == loggedInUser.id  %}
                                         <div style="margin-top:20;">
                                             <span class="badge"> Possible Labels: </span>
@@ -130,7 +144,7 @@
                                  <div>
                                     {% if post.status == 0 and post.user.id == loggedInUser.id %}
                                         {% with infPosts=post|showPossibleInferredPost:loggedInUser  %}
-                                        {% if infPosts.count > 0 %}
+                                        {% if infPosts %}
                                             <div style="margin-top:20px" class="col-xs-12">
                                                <div style="margin-bottom:20px"> Picture taken at the same location and time</div>
                                             
@@ -145,7 +159,7 @@
                                                                 {% endif %}
                                                            </div>
                                                            <div class="col-xs-6">Posted by
-                                                                <strong>{{ post.user.get_full_name }} </strong> <br/>
+                                                                <strong>{{ infPost.user.get_full_name }} </strong> <br/>
                                                                 {% with labels=post|getCommonLabels:infPost  %}
                                                                 {% for label in labels %} 
                                                                     {{label}},

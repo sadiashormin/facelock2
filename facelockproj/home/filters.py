@@ -56,37 +56,41 @@ def postItAnyWayEnabled(post, loggedInUser):
 
 @register.filter
 def showPossibleInferredPost(post, loggedInUser):
-    friend = Friend.objects.get(current_user=loggedInUser)
-    friends = friend.users.all()
-    posts = Post.objects.filter( user_id__in=Friend.objects.get(current_user=loggedInUser).users.all() ).exclude(user_id = loggedInUser.id )
-    #remove post without lat long & time
-    posts = posts.exclude(lat = None);
-    posts = posts.exclude(lon = None);
-    posts = posts.exclude(timestamp = None);
-    radius=decimal.Decimal(.0001) #.01 mile radius
-    hourDiff= 1 # 1 hour
+    if post.timestamp!=None and post.lat!=None and  post.lon!=None:
+
+        friend = Friend.objects.get(current_user=loggedInUser)
+        friends = friend.users.all()
+        posts = Post.objects.filter( user_id__in=Friend.objects.get(current_user=loggedInUser).users.all() ).exclude(user_id = loggedInUser.id )
+        #remove post without lat long & time
+        # posts = posts.exclude(user_id=loggedInUser.id)
+        posts = posts.exclude(lat = None);
+        posts = posts.exclude(lon = None);
+        posts = posts.exclude(timestamp = None);
+        radius=decimal.Decimal(.0001) #.01 mile radius
+        hourDiff= 1 # 1 hour
+        
+
+        # remove post which are farther than .2 mile
+        posts = posts.exclude( lat__gt=(post.lat+radius));
+        posts = posts.exclude( lat__lt=(post.lat-radius));
+
+        posts = posts.exclude( lon__gt=(post.lon+radius));
+        posts = posts.exclude( lon__lt=(post.lon-radius));
+
+        # remove post which are not taken within an hour
+        minTime=post.timestamp - timedelta(hours=hourDiff)
+        posts = posts.exclude( timestamp__lt=minTime);
+
+        maxTime=post.timestamp + timedelta(hours=hourDiff)
+        posts = posts.exclude( timestamp__gt=maxTime);
+        
+
+        #remove post which are not exposed to friends yet.
+        posts = posts.exclude( status=0);
     
-
-    # remove post which are farther than .2 mile
-    posts = posts.exclude( lat__gt=(post.lat+radius));
-    posts = posts.exclude( lat__lt=(post.lat-radius));
-
-    posts = posts.exclude( lon__gt=(post.lon+radius));
-    posts = posts.exclude( lon__lt=(post.lon-radius));
-
-    # remove post which are not taken within an hour
-    minTime=post.timestamp - timedelta(hours=hourDiff)
-    posts = posts.exclude( timestamp__lt=minTime);
-
-    maxTime=post.timestamp + timedelta(hours=hourDiff)
-    posts = posts.exclude( timestamp__gt=maxTime);
-    
-
-    #remove post which are not exposed to friends yet.
-    posts = posts.exclude( status=0);
-  
-    posts = posts.order_by('-created')
-    return posts
+        posts = posts.order_by('-created')
+        return posts
+    return []
 
 
 @register.filter

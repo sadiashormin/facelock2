@@ -1,10 +1,13 @@
 $(document).ready(function(){
-    $(".editImage").click(function(){
-    //    alert( $(".in img ").length);
-        $('.in img').selectAreas({
+
+
+    $("#prepost-pic-edit-button").click(function(){
+       // alert($(".post-content img")[0]);
+        var img=$(".post-content img")[0];
+        $(".post-content:first img:first").selectAreas({
             minSize: [10, 10],
             onChanged: displayAreas,
-            width: 500,
+            width: 480,
             areas: [
                 {
                     x: 10,
@@ -15,12 +18,37 @@ $(document).ready(function(){
             ]
         });
     });
+    $("#prepost-pic-blur-check-button").click(function(){
+        var areas =  $('.post-content:first img:first').selectAreas('areas');
+        // alert($('.in img').width());
+        var text=displayAreas(areas);
+        // alert($('.post-content:first img').width());
+        // alert(text);
+         window.location=window.location.href+"tag/checkpost/"+ $(this).attr("postid")+"/" +$('.post-content:first img:first').width()+"!"+text;
+    });
 
+
+    $(".editImage").click(function(){
+        //    alert( $(".in img ").length);
+            $('.in img').selectAreas({
+                minSize: [10, 10],
+                onChanged: displayAreas,
+                width: 500,
+                areas: [
+                    {
+                        x: 10,
+                        y: 20,
+                        width: 60,
+                        height: 100,
+                    }
+                ]
+            });
+        });
     $(".blurArea").click(function(){
         var areas =  $('.in img').selectAreas('areas');
         // alert($('.in img').width());
         var text=displayAreas(areas);
-        alert($('.in img').width());
+        // alert($('.in img').width());
         // alert(text);
          window.location=window.location.href+"tag/reject/"+ $(this).attr("postid")+"/" +$('.in img').width()+"!"+text;
     });
