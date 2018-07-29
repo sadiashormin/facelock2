@@ -20,10 +20,7 @@ $(document).ready(function(){
     });
     $("#prepost-pic-blur-check-button").click(function(){
         var areas =  $('.post-content:first img:first').selectAreas('areas');
-        // alert($('.in img').width());
         var text=displayAreas(areas);
-        // alert($('.post-content:first img').width());
-        // alert(text);
          window.location=window.location.href+"tag/checkpost/"+ $(this).attr("postid")+"/" +$('.post-content:first img:first').width()+"!"+text;
     });
 

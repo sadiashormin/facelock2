@@ -4,6 +4,7 @@ from accounts.models import Face
 import decimal
 from datetime import datetime, timedelta
 from sets import Set
+from scipy import spatial
 register = template.Library()
 
 @register.filter
@@ -66,7 +67,7 @@ def showPossibleInferredPost(post, loggedInUser):
         posts = posts.exclude(lat = None);
         posts = posts.exclude(lon = None);
         posts = posts.exclude(timestamp = None);
-        radius=decimal.Decimal(.0001) #.01 mile radius
+        radius=decimal.Decimal(.001) #.1 mile radius
         hourDiff= 1 # 1 hour
         
 
@@ -94,10 +95,37 @@ def showPossibleInferredPost(post, loggedInUser):
 
 
 @register.filter
-def getCommonLabels(post, infPost):
+def getSimilarity(post, infPost):
+    
     pl=post.labels.split(',')
     ipl=infPost.labels.split(',')
-    lables=list(set.intersection(set(pl),set(ipl)))
+    pd={}
+    for l in pl:
+        pd[l.split(":")[0]]=l.split(":")[1]
+    ipd={}
+    for l in ipl:
+        ipd[l.split(":")[0]]=l.split(":")[1]
 
-    #lables=['grass', 'cow', 'cat', 'dog']
-    return lables;
+
+
+
+    unionLables=list(set.union(set(pd.keys()),set(ipd.keys())))
+
+    f=[]
+    fPrime=[]
+    for l in unionLables:
+        if l in pd:
+            f.append(float(pd[l]))
+        if l not in  pd:
+            f.append(float(0))
+        if l in ipd:
+            fPrime.append(float( ipd[l]))
+        if l not in ipd:
+            fPrime.append(float(0))
+
+        
+    cosineSimilarity = 1 - spatial.distance.cosine(f, fPrime)
+    euclideanDistance = spatial.distance.euclidean(f, fPrime)
+    commonLables=list(set.intersection(set(pd.keys()),set(ipd.keys())));
+#  return [cosineSimilarity,euclideanDistance, list(set.intersection(set(pd.keys()),set(ipd.keys())))];
+    return [cosineSimilarity,euclideanDistance,commonLables];

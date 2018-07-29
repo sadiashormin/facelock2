@@ -143,9 +143,9 @@ def googlecloudplatformexperiement(imagename):
     labelcsv=""
     for label in labels:
         if labelcsv =="":
-            labelcsv= label.description
+            labelcsv= label.description + ":"+ str(round(label.score,2))
         else:
-            labelcsv= labelcsv+","+label.description
+            labelcsv= labelcsv+","+label.description+ ":"+ str(round(label.score,2))
     return labelcsv
 
 def change_friends(request, operation, pk):
