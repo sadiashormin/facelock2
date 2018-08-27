@@ -105,12 +105,7 @@ def getSimilarity(post, infPost):
     ipd={}
     for l in ipl:
         ipd[l.split(":")[0]]=l.split(":")[1]
-
-
-
-
     unionLables=list(set.union(set(pd.keys()),set(ipd.keys())))
-
     f=[]
     fPrime=[]
     for l in unionLables:
