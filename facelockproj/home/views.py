@@ -16,7 +16,7 @@ from google.cloud import vision
 from google.cloud.vision import types
 # <----
 import time
-from latlon import get_exif_data, get_lat_lon,get_timespan
+from utils import get_exif_data, get_lat_lon,get_timespan
 
 register = template.Library()
 

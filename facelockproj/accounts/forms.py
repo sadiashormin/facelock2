@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
-# from accounts.models import UserProfile
 from accounts.models import Face
 
 
@@ -31,35 +30,16 @@ class RegistrationForm(UserCreationForm):
 
         return user
 
+
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
-        
-# class EditProfileForm(forms.ModelForm):
-    # template_name='/something/else'
 
-    # class Meta:
-    #     model = UserProfile
-    #     # exclude=('User',)
-    #     fields = (
-    #         # 'first_name',
-    #         # 'last_name',
-    #         'image',
-    #          'city'
-    #     )
-    # def save(self, commit=True):
-    #     profile = super(EditProfileForm, self).save(commit=False)
-    #     profile.city = self.cleaned_data['city']
-    #     #profile.image=self.cleaned_data['image']
-
-    #     if commit:
-    #         profile.save()
-
-    #     return profile
 
 class FaceForm(forms.ModelForm):
     picture = forms.ImageField()
+
     class Meta:
         model = Face
         fields = ('picture',)

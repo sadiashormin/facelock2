@@ -10,6 +10,7 @@ class HomeForm(forms.ModelForm):
         }
     ))
     picture = forms.ImageField(required=False)
+
     class Meta:
         model = Post
-        fields = ('post','picture')
+        fields = ('post', 'picture')
